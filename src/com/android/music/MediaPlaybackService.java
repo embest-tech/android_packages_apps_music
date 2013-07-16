@@ -1085,8 +1085,15 @@ public class MediaPlaybackService extends Service {
     }
 
     private void setNextTrack() {
-        mNextPlayPos = getNextPosition(false);
-        if (mNextPlayPos >= 0) {
+       int pos = getNextPosition(false);
+        if (pos < 0) {
+            gotoIdleState();
+            if (mIsSupposedToBePlaying) {
+               mIsSupposedToBePlaying = false;
+               notifyChange(PLAYSTATE_CHANGED);
+            }
+        } else {
+            mNextPlayPos = pos;
             long id = mPlayList[mNextPlayPos];
             mPlayer.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
         }
